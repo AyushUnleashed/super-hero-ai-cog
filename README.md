@@ -15,4 +15,4 @@ Then, you can run predictions:
 
 "Thor: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire."
 
-![alt text](output.0.png)
+![alt text](output.1.png)

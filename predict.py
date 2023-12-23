@@ -59,6 +59,14 @@ class Predictor(BasePredictor):
             description="Prompt",
             default="photo of a beautiful girl wearing casual shirt in a garden"
         ),
+        negative_prompt: str = Input(
+                    description="negative_prompt",
+                    default="nipple, cleavage, nudity,nsfw,sexual ,explicit, revealing ,suggestive ,provocative ,lingerie , signature, watermark, disfigured, kitsch, ugly, oversaturated, grain, low-res, Deformed, blurry, " \
+                                                            "bad anatomy, disfigured, poorly drawn face, mutation, mutated, extra limb, ugly, poorly drawn " \
+                                                            "hands, missing limb, blurry, floating limbs, disconnected limbs, malformed hands, blur, " \
+                                                            "out of focus, long neck, long body, ugly, disgusting, poorly drawn, childish, mutilated, , mangled, " \
+                                                            "old, surreal, long face, out of frame"
+        ),
         num_outputs: int = Input(
             description="Number of images to output.",
             ge=1,
@@ -70,6 +78,16 @@ class Predictor(BasePredictor):
         ),
         seed: int = Input(
             description="Random seed. Leave blank to randomize the seed", default=None
+        ),
+        guidance_scale: float16 = Input(
+            description="guidance_scale",
+              ge=0.0,default=None
+        ),
+        ip_guidance_scale: float16 = Input(
+            description="ip_guidance_scale b/w 0 - 1",
+            ge=0.0,
+            le=1.0,
+            default=0.5,
         ),
     ) -> List[Path]:
         """Run a single prediction on the model"""
@@ -98,6 +116,7 @@ class Predictor(BasePredictor):
             width=768,
             height=768,
             guidance_scale=7.5,
+            scale=0.5
         )
 
         output_paths = []
