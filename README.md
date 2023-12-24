@@ -8,7 +8,7 @@ First, download the pre-trained weights:
 
 Then, you can run predictions:
 
-    cog predict -i image=@ayush_512.jpg -i prompt="Thor: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i seed=15251
+    cog predict -i ip_image=@ayush_512.jpg -i control_net_image=@output.1.png -i prompt="Thor: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i seed=15251
 
 
 ## Example:

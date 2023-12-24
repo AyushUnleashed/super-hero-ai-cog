@@ -8,7 +8,9 @@ build:
     - "transformers==4.35.0"
     - "accelerate==0.24.1"
     - "einops==0.7.0"
+    - "controlnet_hinter==0.0.5"
     - "git+https://github.com/tencent-ailab/IP-Adapter.git"
+#    - "git+https://github.com/huggingface/diffusers.git@main"
 
   run:
     - git clone https://github.com/tencent-ailab/IP-Adapter.git /IP-Adapter

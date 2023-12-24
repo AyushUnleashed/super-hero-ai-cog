@@ -16,6 +16,10 @@ if not os.path.exists("model-cache"):
 if not os.path.exists("vae-cache"):
     os.makedirs("vae-cache")
 
+if not os.path.exists("pose-cache"):
+    os.makedirs("pose-cache")
+
+
 noise_scheduler = DDIMScheduler(
     num_train_timesteps=1000,
     beta_start=0.00085,
