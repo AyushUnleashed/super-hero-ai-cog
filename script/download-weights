@@ -2,12 +2,13 @@
 import os
 import sys
 import torch
-from diffusers import DDIMScheduler, StableDiffusionPipeline, AutoencoderKL
+from diffusers import StableDiffusionControlNetPipeline, DDIMScheduler, AutoencoderKL, ControlNetModel,StableDiffusionPipeline
 
 # append project directory to path so predict.py can be imported
 sys.path.append('.')
 
 from predict import base_model_path, vae_model_path
+from control_net_utils import CONTROLNET_MAPPING
 
 # Make cache folder
 if not os.path.exists("model-cache"):
@@ -44,4 +45,11 @@ pipe = StableDiffusionPipeline.from_pretrained(
     feature_extractor=None,
     safety_checker=None,
     cache_dir="model-cache"
+)
+
+
+controlnet = ControlNetModel.from_pretrained(
+    CONTROLNET_MAPPING['pose']["model_id"],
+    torch_dtype=torch.float16,
+    cache_dir="pose-cache",
 )

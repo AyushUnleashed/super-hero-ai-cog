@@ -7,7 +7,7 @@ import torch
 import shutil
 from PIL import Image
 from typing import List
-from diffusers import StableDiffusionPipeline, DDIMScheduler, AutoencoderKL
+from diffusers import StableDiffusionControlNetPipeline, DDIMScheduler, AutoencoderKL, ControlNetModel,StableDiffusionPipeline
 from ip_adapter import IPAdapterPlus
 from control_net_utils import CONTROLNET_MAPPING
 
@@ -79,7 +79,7 @@ class Predictor(BasePredictor):
              description="Input face image",
              default=None
         ),
-        ip_guidance_scale: float16 = Input(
+        ip_guidance_scale: float = Input(
             description="ip_guidance_scale b/w 0 to 1",
             ge=0.0,
             le=1.0,
@@ -121,15 +121,15 @@ class Predictor(BasePredictor):
         seed: int = Input(
             description="Random seed. Leave blank to randomize the seed", default=None
         ),
-        guidance_scale: float16 = Input(
+        guidance_scale: float = Input(
             description="guidance_scale",
-              ge=0.0,default=None
+              ge=0.0,default=7.5
         ),
         control_net_image: Path = Input(
              description="Enter image to be used with controlnet",
              default=None
         ),
-        controlnet_conditioning_scale: float16 = Input(
+        controlnet_conditioning_scale: float = Input(
                 description="ip_guidance_scale b/w 0 to 1",
                 ge=0.0,
                 le=1.0,
