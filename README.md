@@ -8,7 +8,7 @@ First, download the pre-trained weights:
 
 Then, you can run predictions:
 
-    cog predict -i ip_image=@ayush_512.jpg -i control_net_image=@output.1.png -i prompt="Thor: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i seed=15251
+    cog predict -i ip_image=@ayush_512.jpg -i control_net_image=@pose1.jpg -i prompt="Black Panther: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i width=768 -i height=768
 
 
 ## Example:
@@ -16,6 +16,3 @@ Then, you can run predictions:
 "Thor: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire."
 
 ![alt text](output.1.png)
-
-
-    cog predict -i ip_image=@ayush_512.jpg -i control_net_image=@output.1.png -i prompt="Black Panther: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i width=768 -i height=768
