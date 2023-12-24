@@ -2,23 +2,36 @@
 import os
 import sys
 import torch
+from controlnet_aux import OpenposeDetector
 from diffusers import StableDiffusionControlNetPipeline, DDIMScheduler, AutoencoderKL, ControlNetModel,StableDiffusionPipeline
 
 # append project directory to path so predict.py can be imported
 sys.path.append('.')
 
 from predict import base_model_path, vae_model_path
-from control_net_utils import CONTROLNET_MAPPING
+from predict import CONTROL_NAME, OPENPOSE_NAME, CONTROL_CACHE, POSE_CACHE, MODEL_CACHE
 
-# Make cache folder
-if not os.path.exists("model-cache"):
-    os.makedirs("model-cache")
+# Make cache folders
+if not os.path.exists(CONTROL_CACHE):
+    os.makedirs(CONTROL_CACHE)
 
-if not os.path.exists("vae-cache"):
-    os.makedirs("vae-cache")
+if not os.path.exists(POSE_CACHE):
+    os.makedirs(POSE_CACHE)
 
-if not os.path.exists("pose-cache"):
-    os.makedirs("pose-cache")
+if not os.path.exists(MODEL_CACHE):
+    os.makedirs(MODEL_CACHE)
+
+openpose = OpenposeDetector.from_pretrained(
+    CONTROL_NAME,
+    cache_dir=CONTROL_CACHE,
+)
+
+controlnet = ControlNetModel.from_pretrained(
+    OPENPOSE_NAME,
+    torch_dtype=torch.float16
+)
+controlnet.save_pretrained(POSE_CACHE)
+
 
 
 noise_scheduler = DDIMScheduler(
@@ -31,25 +44,20 @@ noise_scheduler = DDIMScheduler(
     steps_offset=1,
 )
 
-# Download SDXL-VAE-FP16-Fix
+
 vae = AutoencoderKL.from_pretrained(
     vae_model_path,
     cache_dir="vae-cache"
 )
 
-pipe = StableDiffusionPipeline.from_pretrained(
+pipe = StableDiffusionControlNetPipeline.from_pretrained(
     base_model_path,
+    controlnet=controlnet,
     torch_dtype=torch.float16,
     scheduler=noise_scheduler,
     vae=vae,
     feature_extractor=None,
     safety_checker=None,
-    cache_dir="model-cache"
+    cache_dir=MODEL_CACHE
 )
-
-
-controlnet = ControlNetModel.from_pretrained(
-    CONTROLNET_MAPPING['pose']["model_id"],
-    torch_dtype=torch.float16,
-    cache_dir="pose-cache",
-)
+pipe.save_pretrained(MODEL_CACHE, safe_serialization=True)

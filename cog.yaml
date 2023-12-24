@@ -11,6 +11,9 @@ build:
     - "controlnet_hinter==0.0.5"
     - "git+https://github.com/tencent-ailab/IP-Adapter.git"
 #    - "git+https://github.com/huggingface/diffusers.git@main"
+    - "controlnet_aux==0.0.6"
+    - "mediapipe==0.10.3"
+    - "xformers"
 
   run:
     - git clone https://github.com/tencent-ailab/IP-Adapter.git /IP-Adapter

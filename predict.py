@@ -9,7 +9,8 @@ from PIL import Image
 from typing import List
 from diffusers import StableDiffusionControlNetPipeline, DDIMScheduler, AutoencoderKL, ControlNetModel,StableDiffusionPipeline
 from ip_adapter import IPAdapterPlus
-from control_net_utils import CONTROLNET_MAPPING
+from controlnet_aux import OpenposeDetector
+# from control_net_utils import CONTROLNET_MAPPING
 
 base_model_path = "digiplay/Juggernaut_final"
 vae_model_path = "stabilityai/sd-vae-ft-mse"
@@ -21,7 +22,10 @@ MODEL_CACHE = "model-cache"
 VAE_CACHE = "vae-cache"
 CONTROL_CACHE = "control-cache"
 POSE_CACHE = "pose-cache"
-CONTROL_TYPE = "pose"
+# CONTROL_TYPE = "pose"
+CONTROL_NAME = "lllyasviel/ControlNet"
+
+OPENPOSE_NAME ="lllyasviel/sd-controlnet-openpose"
 
 def load_image(path):
         shutil.copyfile(path, "/tmp/image.png")
@@ -31,10 +35,14 @@ class Predictor(BasePredictor):
     def setup(self) -> None:
         """Load the model into memory to make running multiple predictions efficient"""
 
+        self.openpose = OpenposeDetector.from_pretrained(
+            CONTROL_NAME,
+            cache_dir=CONTROL_CACHE,
+        )
+
         controlnet = ControlNetModel.from_pretrained(
-            CONTROLNET_MAPPING[CONTROL_TYPE]["model_id"],
+            POSE_CACHE,
             torch_dtype=torch.float16,
-            cache_dir=POSE_CACHE,
         ).to(device)
 
         noise_scheduler = DDIMScheduler(
@@ -53,7 +61,7 @@ class Predictor(BasePredictor):
         # load SD pipeline
 
         self.pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            base_model_path,
+            MODEL_CACHE,
             controlnet=controlnet,
             torch_dtype=torch.float16,
             scheduler=noise_scheduler,
@@ -147,7 +155,7 @@ class Predictor(BasePredictor):
 
         # Load pose image
         control_net_image = Image.open(control_net_image).resize((width, height))
-        openpose_image = CONTROLNET_MAPPING[CONTROL_TYPE]["hinter"](control_net_image)
+        openpose_image = self.openpose(control_net_image).resize((width, height))
 
         ip_model = IPAdapterPlus(self.pipe, image_encoder_path, ip_ckpt, device, num_tokens=16)
 
