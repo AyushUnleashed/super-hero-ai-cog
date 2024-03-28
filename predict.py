@@ -40,9 +40,10 @@ def load_image(path):
 class Predictor(BasePredictor):
     def setup(self) -> None:
         """Load the model into memory to make running multiple predictions efficient"""
-
+        
+        # read readme on how to fill control local folder
         self.openpose = OpenposeDetector.from_pretrained(
-            CONTROL_NAME,
+            CONTROL_LOCAL,
             cache_dir=CONTROL_CACHE,
         )
 
