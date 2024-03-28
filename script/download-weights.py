@@ -5,34 +5,31 @@ import torch
 from controlnet_aux import OpenposeDetector
 from diffusers import StableDiffusionControlNetPipeline, DDIMScheduler, AutoencoderKL, ControlNetModel,StableDiffusionPipeline
 
+
 # append project directory to path so predict.py can be imported
 sys.path.append('.')
 
 from predict import base_model_path, vae_model_path
-from predict import CONTROL_NAME, OPENPOSE_NAME, CONTROL_CACHE, POSE_CACHE, MODEL_CACHE
+from predict import CONTROL_NAME, OPENPOSE_NAME, CONTROL_CACHE, POSE_CACHE, MODEL_CACHE, VAE_CACHE
+from predict import  CONTROL_LOCAL, POSE_LOCAL, MODEL_LOCAL, VAE_LOCAL
 
 # Make cache folders
 if not os.path.exists(CONTROL_CACHE):
     os.makedirs(CONTROL_CACHE)
-
-if not os.path.exists(POSE_CACHE):
-    os.makedirs(POSE_CACHE)
-
-if not os.path.exists(MODEL_CACHE):
-    os.makedirs(MODEL_CACHE)
+#
+# if not os.path.exists(POSE_CACHE):
+#     os.makedirs(POSE_CACHE)
+#
+# if not os.path.exists(MODEL_CACHE):
+#     os.makedirs(MODEL_CACHE)
+#
+# if not os.path.exists(VAE_CACHE):
+#     os.makedirs(VAE_CACHE)
 
 openpose = OpenposeDetector.from_pretrained(
     CONTROL_NAME,
     cache_dir=CONTROL_CACHE,
 )
-
-controlnet = ControlNetModel.from_pretrained(
-    OPENPOSE_NAME,
-    torch_dtype=torch.float16
-)
-controlnet.save_pretrained(POSE_CACHE)
-
-
 
 noise_scheduler = DDIMScheduler(
     num_train_timesteps=1000,
@@ -44,11 +41,18 @@ noise_scheduler = DDIMScheduler(
     steps_offset=1,
 )
 
+controlnet = ControlNetModel.from_pretrained(
+    OPENPOSE_NAME,
+    torch_dtype=torch.float16
+)
+# controlnet.save_pretrained(POSE_LOCAL)
+
 
 vae = AutoencoderKL.from_pretrained(
-    vae_model_path,
-    cache_dir="vae-cache"
+    vae_model_path
 )
+
+vae.save_pretrained(VAE_LOCAL)
 
 pipe = StableDiffusionControlNetPipeline.from_pretrained(
     base_model_path,
@@ -58,6 +62,5 @@ pipe = StableDiffusionControlNetPipeline.from_pretrained(
     vae=vae,
     feature_extractor=None,
     safety_checker=None,
-    cache_dir=MODEL_CACHE
 )
-pipe.save_pretrained(MODEL_CACHE, safe_serialization=True)
+pipe.save_pretrained(MODEL_LOCAL, safe_serialization=True)

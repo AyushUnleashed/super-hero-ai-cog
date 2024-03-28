@@ -2,6 +2,7 @@
 from cog import BasePredictor, Input, Path
 import os
 import sys
+os.environ['HF_HOME'] = '/src/cache'
 sys.path.extend(['/IP-Adapter'])
 import torch
 import shutil
@@ -19,9 +20,14 @@ ip_ckpt = "/IP-Adapter/models/ip-adapter-plus-face_sd15.bin"
 device = "cuda"
 
 MODEL_CACHE = "model-cache"
+MODEL_LOCAL= "model-local"
 VAE_CACHE = "vae-cache"
+VAE_LOCAL = "vae-local"
 CONTROL_CACHE = "control-cache"
+CONTROL_LOCAL = "control-local"
 POSE_CACHE = "pose-cache"
+POSE_LOCAL = f"{MODEL_LOCAL}/controlnet"
+
 # CONTROL_TYPE = "pose"
 CONTROL_NAME = "lllyasviel/ControlNet"
 
@@ -41,8 +47,9 @@ class Predictor(BasePredictor):
         )
 
         controlnet = ControlNetModel.from_pretrained(
-            POSE_CACHE,
+            POSE_LOCAL,
             torch_dtype=torch.float16,
+            local_files_only=True
         ).to(device)
 
         noise_scheduler = DDIMScheduler(
@@ -55,20 +62,20 @@ class Predictor(BasePredictor):
             steps_offset=1,
         )
         vae = AutoencoderKL.from_pretrained(
-            vae_model_path,
-            cache_dir=VAE_CACHE
+            VAE_LOCAL,
+            local_files_only=True
         ).to(dtype=torch.float16)
         # load SD pipeline
 
         self.pipe = StableDiffusionControlNetPipeline.from_pretrained(
-            MODEL_CACHE,
+            MODEL_LOCAL,
             controlnet=controlnet,
             torch_dtype=torch.float16,
             scheduler=noise_scheduler,
             vae=vae,
             feature_extractor=None,
             safety_checker=None,
-            cache_dir=MODEL_CACHE
+            local_files_only=True
         ).to(device)
 
 #         self.pipe = StableDiffusionPipeline.from_pretrained(

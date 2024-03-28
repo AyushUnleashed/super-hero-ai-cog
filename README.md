@@ -4,11 +4,20 @@ This is an implementation of the [tencent-ailab / IP-Adapter](https://github.com
 
 First, download the pre-trained weights:
 
-    cog run script/download-weights
+    cog run script/download-weights.py
 
 Then, you can run predictions:
 
     cog predict -i ip_image=@ayush_512.jpg -i control_net_image=@pose1.jpg -i prompt="Black Panther: High Res, Confident demeanor, wielding Mjolnir, regal Asgardian attire." -i width=768 -i height=768
+
+
+## prelude 
+cog run python handle_cache.py  => this will create cache folder which will be used in predict
+This solves transformers issue.
+
+
+## PUSHING TO REPICATE:
+cog push --separate-weights r8.im/ayushunleashed/super-hero-ai
 
 
 ## Example:

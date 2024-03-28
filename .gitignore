@@ -1,6 +1,16 @@
 __pycache__
 .cog
+.idea
+
 model-cache
 vae-cache
 pose-cache
 control-cache
+
+model-local
+vae-local
+pose-local
+control-local
+
+cache
+venv
